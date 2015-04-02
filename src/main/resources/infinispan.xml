@@ -1,0 +1,45 @@
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:infinispan:config:7.2 http://www.infinispan.org/schemas/infinispan-config-7.2.xsd"
+            xmlns="urn:infinispan:config:7.2">
+
+
+<jgroups>
+        <stack-file name="tcp" path="jgroups.xml" />
+    </jgroups>
+
+
+    <threads>
+        <blocking-bounded-queue-thread-pool name="state-consumer" core-threads="200" max-threads="201" queue-length="1" keepalive-time="60"/>
+    </threads>
+    
+    <cache-container default-cache="default" state-consumer-executor="state-consumer">
+        
+        <distributed-cache name="qci-cache" mode="SYNC">
+            
+            <store-as-binary/>
+            <locking isolation="REPEATABLE_READ" striping="false" acquire-timeout="30000" concurrency-level="500"
+                     write-skew="false"/>
+            <state-transfer timeout="4800000" await-initial-transfer="false"/>
+            <indexing index="LOCAL">
+                <property name="hibernate.search.default.locking_cachename">ViprLuceneQciIndexesLocking</property>
+                <property name="hibernate.search.default.data_cachename">ViprLuceneQciIndexesData</property>
+                <property name="hibernate.search.default.metadata_cachename">ViprLuceneQciIndexesMetadata</property>
+                <property name="hibernate.search.lucene_version">LUCENE_4_10_2</property>
+                <property name="hibernate.search.default.indexmanager">
+                    org.infinispan.query.indexmanager.InfinispanIndexManager
+                </property>
+                <property name="hibernate.search.default.indexwriter.merge_factor">30</property>
+            </indexing>
+        </distributed-cache>
+
+        <replicated-cache name="ViprLuceneQciIndexesData">
+        </replicated-cache>
+
+        <replicated-cache name="ViprLuceneQciIndexesLocking">
+        </replicated-cache>
+
+        <replicated-cache name="ViprLuceneQciIndexesMetadata">
+        </replicated-cache>
+
+
+    </cache-container>
+</infinispan>
