@@ -16,7 +16,7 @@ public class IndexSizeCondition implements Condition {
       try {
          Thread.sleep(2000);
       } catch (InterruptedException e) {
-         e.printStackTrace();  // TODO: Customise this generated block
+         e.printStackTrace();
       }
       int count = Query.count(cache);
       System.out.printf("\rCurrent index size: %d\n", count);

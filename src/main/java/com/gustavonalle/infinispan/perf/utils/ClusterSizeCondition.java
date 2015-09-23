@@ -14,6 +14,15 @@ public class ClusterSizeCondition implements Condition {
 
    @Override
    public boolean evaluate() {
-      return this.expectedSize == transport.getMembers().size();
+      int size = transport.getMembers().size();
+      if (this.expectedSize == size) {
+         return true;
+      }
+      System.out.println("Waiting for cluster to form, current size: " + size);
+      try {
+         Thread.sleep(1000);
+      } catch (InterruptedException ignored) {
+      }
+      return false;
    }
 }
