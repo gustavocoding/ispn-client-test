@@ -3,7 +3,7 @@ package com.gustavonalle.infinispan.perf.domain;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.SortableField;
+//import org.hibernate.search.annotations.SortableField;
 import org.hibernate.search.annotations.Store;
 import org.infinispan.protostream.annotations.ProtoField;
 import org.infinispan.protostream.annotations.ProtoMessage;
@@ -19,7 +19,7 @@ public class Transaction implements Serializable {
    int size;
 
    @Field
-   @SortableField
+//   @SortableField
    String script;
 
    public Transaction(int size, String script) {

@@ -36,6 +36,15 @@ public class CacheManager {
 
 
       int chunk = 1024 * 1024;
+
+      Configuration indexCacheConfiguration = new ConfigurationBuilder()
+              .clustering().cacheMode(CacheMode.REPL_SYNC).expiration().wakeUpInterval(-1).locking().useLockStriping(false)
+              .persistence().passivation(false)
+              .addSingleFileStore().shared(false).preload(false)
+              .fetchPersistentState(true).purgeOnStartup(false)
+              .location(name + "/cacheStore").build();
+
+
       Configuration configuration = new ConfigurationBuilder()
               .jmxStatistics().enable()
               .clustering().cacheMode(CacheMode.DIST_SYNC)
@@ -47,12 +56,14 @@ public class CacheManager {
 //                .indexing().enable().indexLocalOnly(false)   // JDG
               .addProperty("default.indexmanager", "org.infinispan.query.indexmanager.InfinispanIndexManager")
 //              .addProperty("default.indexmanager", "near-real-time")
+              .addProperty("default.metadata_cachename", "metadata_cache")
+              .addProperty("default.data_cachename", "data_cache")
 //              .addProperty("hibernate.search.default.exclusive_index_use", "true")
 //              .addProperty("hibernate.search.default.indexwriter.ram_buffer_size", "256")
-              .addProperty("default.chunk_size", String.valueOf(chunk))
+//              .addProperty("default.chunk_size", String.valueOf(chunk))
 //              .addProperty("default.directory_provider", "filesystem")
 //              .addProperty("default.directory_provider", "ram")
-//              .addProperty("default.directory_provider", "infinispan")
+              .addProperty("default.directory_provider", "infinispan")
 //              .addProperty("default.indexBase", name + "/index")
 //              .addProperty("default.worker.execution", "async")
 //              .addProperty("default.max_queue_length", "10000")
@@ -75,8 +86,19 @@ public class CacheManager {
 //              .persistence().addSingleFileStore().location(name + "/cacheStore").preload(true).fetchPersistentState(true)
               .build();
 
-      this.cacheManager = new DefaultCacheManager(gc, configuration);
 
+
+
+      this.cacheManager = new DefaultCacheManager(gc, configuration);
+      cacheManager.defineConfiguration("metadata_cache", indexCacheConfiguration);
+      cacheManager.defineConfiguration("data_cache",indexCacheConfiguration);
+
+   }
+
+   public static void main(String[] args) {
+      DefaultCacheManager defaultCacheManager = new DefaultCacheManager();
+      Cache<Object, Object> nonExistingCache = defaultCacheManager.getCache("whatever");
+      System.out.println(nonExistingCache.getCacheConfiguration().clustering().cacheMode());
    }
 
    public Cache<String, Transaction> getCache() {

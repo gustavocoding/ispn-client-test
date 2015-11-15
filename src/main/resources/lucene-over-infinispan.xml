@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<infinispan>
+    <jgroups>
+        <stack-file name="tcp" path="jgroups.xml" />
+    </jgroups>
+
+    <cache-container default-cache="CM_SERVICE_TYPES">
+        <jmx duplicate-domains="true"/>
+        <transport stack="tcp" cluster="sampleCluster"/>
+        <replicated-cache name="SKYWARE_SERVICE_LUCENE_METADATA_CACHE" mode="SYNC">
+            <expiration interval="-1"/>
+            <locking striping="false"/>
+            <persistence passivation="false">
+                <file-store shared="false" preload="true" fetch-state="true" purge="false"
+                            path="lucene/cache"/>
+            </persistence>
+        </replicated-cache>
+
+        <replicated-cache name="SKYWARE_SERVICE_LUCENE_DATA_CACHE" mode="SYNC">
+            <expiration interval="-1"/>
+            <locking striping="false"/>
+            <persistence passivation="false">
+                <file-store shared="false" preload="false" fetch-state="true" purge="false"
+                            path="lucene/cache"/>
+            </persistence>
+        </replicated-cache>
+
+        <replicated-cache name="SKYWARE_SERVICE_LUCENE_LOCKING_CACHE" mode="SYNC" start="EAGER"/>
+
+    </cache-container>
+
+
+</infinispan>
